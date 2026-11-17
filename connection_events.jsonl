@@ -1,0 +1,7 @@
+{"timestamp": "2026-10-17T18:23:37.224520+00:00", "source": "127.0.0.1", "source_port": 57961, "destination": "NetSentinel-Collector", "event_type": "tcp_connection"}
+{"timestamp": "2026-10-17T18:32:43.687817+00:00", "source": "127.0.0.1", "source_port": 57025, "destination": "NetSentinel-Collector", "event_type": "tcp_connection"}
+{"timestamp": "2026-10-17T18:32:43.689814+00:00", "source": "127.0.0.1", "source_port": 57026, "destination": "NetSentinel-Collector", "event_type": "tcp_connection"}
+{"timestamp": "2026-10-17T18:32:43.693191+00:00", "source": "127.0.0.1", "source_port": 57027, "destination": "NetSentinel-Collector", "event_type": "tcp_connection"}
+{"timestamp": "2026-10-17T18:32:43.694190+00:00", "source": "127.0.0.1", "source_port": 57028, "destination": "NetSentinel-Collector", "event_type": "tcp_connection"}
+{"timestamp": "2026-10-17T18:32:43.707189+00:00", "source": "127.0.0.1", "source_port": 57029, "destination": "NetSentinel-Collector", "event_type": "tcp_connection"}
+{"timestamp": "2026-10-21T06:07:45.269931+00:00", "source": "127.0.0.1", "source_port": 62545, "destination": "NetSentinel-Collector", "event_type": "tcp_connection"}

@@ -1,0 +1,275 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="5">
+    <title>NetSentinel | Security Operations Center</title>
+    <link rel="stylesheet" href="{% static 'network/dashboard.css' %}">
+</head>
+<body>
+<div class="app-shell">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">N</div>
+            <div>
+                <h2>NetSentinel</h2>
+                <span>NETWORK INTELLIGENCE</span>
+            </div>
+        </div>
+
+        <div class="nav-label">WORKSPACE</div>
+        <a class="nav-item active" href="#overview">▦ &nbsp; Overview</a>
+        <a class="nav-item" href="#topology">⌘ &nbsp; Network Topology</a>
+        <a class="nav-item" href="#alerts">⚠ &nbsp; Threat Indicators</a>
+        <a class="nav-item" href="#events">≋ &nbsp; Event Monitor</a>
+        <a class="nav-item" href="#algorithms">◈ &nbsp; DSA Analysis</a>
+
+        <div class="sidebar-bottom">
+            <div class="status-dot"></div>
+            <div>
+                <strong>Collector status</strong>
+                <span>Dashboard connected</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">SECURITY OPERATIONS / OVERVIEW</p>
+                <h1>Network Intelligence</h1>
+                <p class="subtitle">
+                    Monitor connections, analyze network structure, and inspect suspicious patterns.
+                </p>
+            </div>
+            <div class="topbar-status">
+                <span class="live-dot"></span>
+                LOCAL MONITORING
+            </div>
+        </header>
+
+        <section class="notice">
+            <span class="notice-icon">ⓘ</span>
+            <div>
+                <strong>Data source: {{ data_mode }}</strong>
+                <p>This dashboard displays recorded connection events. Alerts are indicators for investigation, not proof of compromise.</p>
+            </div>
+        </section>
+
+        <section id="overview" class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-heading">
+                    <span>Devices observed</span>
+                    <span class="stat-icon blue">⌘</span>
+                </div>
+                <div class="stat-value">{{ devices|length }}</div>
+                <div class="stat-caption">Nodes in current graph</div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-heading">
+                    <span>Unique connections</span>
+                    <span class="stat-icon cyan">⇄</span>
+                </div>
+                <div class="stat-value">{{ connections }}</div>
+                <div class="stat-caption">Undirected graph edges</div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-heading">
+                    <span>Events analyzed</span>
+                    <span class="stat-icon purple">≋</span>
+                </div>
+                <div class="stat-value">{{ events_count }}</div>
+                <div class="stat-caption">Events loaded for analysis</div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-heading">
+                    <span>Threat indicators</span>
+                    <span class="stat-icon orange">⚠</span>
+                </div>
+                <div class="stat-value">{{ alerts|length }}</div>
+                <div class="stat-caption">Algorithm-generated alerts</div>
+            </article>
+        </section>
+
+        <section class="content-grid">
+            <article id="topology" class="panel topology-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">GRAPH ANALYTICS</p>
+                        <h2>Network Topology</h2>
+                    </div>
+                    <span class="pill">ADJACENCY LIST</span>
+                </div>
+
+                <p class="panel-description">
+                    Connections reconstructed from the currently loaded events.
+                </p>
+
+                {% if topology_edges %}
+                    <div class="edge-list">
+                        {% for edge in topology_edges %}
+                            <div class="edge-row">
+                                <span class="device-node">{{ edge.source }}</span>
+                                <span class="edge-line"></span>
+                                <span class="device-node">{{ edge.destination }}</span>
+                                <span class="edge-label">CONNECTED</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span>⌘</span>
+                        <p>No connections available yet.</p>
+                    </div>
+                {% endif %}
+
+                <div class="panel-footer">
+                    <span class="legend-dot"></span>
+                    Each row represents one unique graph edge
+                </div>
+            </article>
+
+            <article id="alerts" class="panel alerts-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">ANOMALY DETECTION</p>
+                        <h2>Threat Indicators</h2>
+                    </div>
+                    <span class="pill warning-pill">{{ alerts|length }} ALERTS</span>
+                </div>
+
+                {% if alerts %}
+                    <div class="alert-list">
+                        {% for alert in alerts %}
+                            <div class="alert-item">
+                                <div class="alert-symbol">!</div>
+                                <div class="alert-body">
+                                    <strong>{{ alert.device }}</strong>
+                                    <p>{{ alert.reason }}</p>
+                                    <div class="alert-meta">
+                                        {{ alert.distinct_destinations }} distinct destinations
+                                    </div>
+                                    {% if alert.destinations %}
+                                        <div class="destination-list">
+                                            {% for destination in alert.destinations %}
+                                                <span>{{ destination }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <span>✓</span>
+                        <p>No suspicious patterns detected in the loaded events.</p>
+                    </div>
+                {% endif %}
+
+                <div class="panel-footer">
+                    Alerts require investigation; they do not confirm an attack.
+                </div>
+            </article>
+        </section>
+
+        <section id="algorithms" class="panel algorithm-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="eyebrow">DATA STRUCTURES & ALGORITHMS</p>
+                    <h2>Graph Traversal Analysis</h2>
+                </div>
+                <span class="pill">BFS / DFS</span>
+            </div>
+
+            <div class="traversal-grid">
+                <div class="traversal-card">
+                    <div class="traversal-title">
+                        
+                        <div>
+                            <h3>Breadth-First Search</h3>
+                            <p>Explores level by level using a queue.</p>
+                        </div>
+                    </div>
+                    <div class="traversal-sequence">
+                        {% for device in bfs_result %}
+                            <span class="sequence-node">{{ device }}</span>
+                            {% if not forloop.last %}<span class="sequence-arrow">→</span>{% endif %}
+                        {% empty %}
+                            <span class="muted">No traversal available.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="traversal-card">
+                    <div class="traversal-title">
+                        
+                        <div>
+                            <h3>Depth-First Search</h3>
+                            <p>Explores a branch before backtracking.</p>
+                        </div>
+                    </div>
+                    <div class="traversal-sequence">
+                        {% for device in dfs_result %}
+                            <span class="sequence-node">{{ device }}</span>
+                            {% if not forloop.last %}<span class="sequence-arrow">→</span>{% endif %}
+                        {% empty %}
+                            <span class="muted">No traversal available.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="panel events-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="eyebrow">CONNECTION LOG</p>
+                    <h2>Recent Connection Events</h2>
+                </div>
+                <span class="pill">LATEST 20</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>SOURCE</th>
+                            <th>DESTINATION</th>
+                            <th>TIME</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in recent_events %}
+                            <tr>
+                                <td><span class="table-device">{{ event.source }}</span></td>
+                                <td>{{ event.destination }}</td>
+                                <td class="event-time">{{ event.time }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3" class="empty-table">
+                                    No connection events recorded yet.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <span>NetSentinel · Network Threat Analysis Engine</span>
+            <span>Python · Django · Graph Algorithms</span>
+        </footer>
+    </main>
+</div>
+</body>
+</html>
